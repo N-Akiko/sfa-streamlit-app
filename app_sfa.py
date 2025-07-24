@@ -8,27 +8,46 @@ import openpyxl
 import traceback
 from estimate_excel_writer import write_estimate_to_excel
 
-# ページ設定
-st.set_page_config(page_title="見積書作成アプリ", layout="wide")
-st.title("見積書作成アプリ")
-
-# --- ログイン機能 ---
-USER_CREDENTIALS = {
-    "admin": "admin123",
-    "guest": "guest456",
-}
-
+# --- ログインチェックとページ設定 ---
 def login():
-    st.subheader("ログイン")
-    username = st.text_input("ユーザー名")
-    password = st.text_input("パスワード", type="password")
-    if st.button("ログイン"):
-        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
-            st.session_state["logged_in"] = True
-            st.session_state["username"] = username
-            st.experimental_rerun()
-        else:
-            st.error("ユーザー名またはパスワードが違います")
+    st.set_page_config(page_title="見積書作成アプリ", layout="wide")
+    st.title("見積書作成アプリ")
+
+    if "logged_in" not in st.session_state:
+        st.session_state["logged_in"] = False
+
+    if st.session_state["logged_in"]:
+        main_app()
+    else:
+        st.header("ログイン")
+        username = st.text_input("ユーザー名")
+        password = st.text_input("パスワード", type="password")
+        if st.button("ログイン"):
+            if username == "user1" and password == "pass1":  # ← 認証ロジック
+                st.session_state["logged_in"] = True
+                st.session_state["username"] = username
+                st.rerun()
+            else:
+                st.error("ユーザー名またはパスワードが正しくありません。")
+
+# --- メインアプリ処理 ---
+def main_app():
+    st.success(f"ようこそ、{st.session_state['username']} さん！")
+
+    if st.sidebar.button("ログアウト"):
+        st.session_state["logged_in"] = False
+        st.session_state["username"] = ""
+        st.rerun()
+
+    # ↓ここから既存の初期化やタブ処理などを書く
+    init_session_state()
+    顧客一覧, 案件一覧, 品名一覧 = load_data()
+    # （タブ描画などの処理）
+
+# --- 起動 ---
+if __name__ == "__main__":
+    login()
+
 
 # --- セッションの初期化 ---
 if "logged_in" not in st.session_state:
@@ -4940,24 +4959,17 @@ def main_app():
 # --- 実行フロー ---
 if "logged_in" not in st.session_state:
     st.session_state["logged_in"] = False
+    st.session_state["username"] = ""
 
 if st.session_state["logged_in"]:
-    # サイドバーにログアウトボタン
-    if st.sidebar.button("ログアウト"):
-        st.session_state["logged_in"] = False
-        st.session_state["username"] = ""
-        st.rerun()
-
-    # ログイン成功時のアプリ本体
-    main_app()
-
+    main_app()  # ← ログイン済みユーザーのみアクセス可
 else:
     st.header("ログイン")
     username = st.text_input("ユーザー名")
     password = st.text_input("パスワード", type="password")
 
     if st.button("ログイン"):
-        if username == "user1" and password == "pass1":  # 仮の認証（将来的にDBなどに切替可能）
+        if username == "user1" and password == "pass1":  # 認証情報
             st.session_state["logged_in"] = True
             st.session_state["username"] = username
             st.rerun()
