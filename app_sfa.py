@@ -4965,8 +4965,8 @@ if st.session_state["logged_in"]:
     main_app()  # ← ログイン済みユーザーのみアクセス可
 else:
     st.header("ログイン")
-    username = st.text_input("ユーザー名")
-    password = st.text_input("パスワード", type="password")
+    username = st.text_input("ユーザー名", key="login_username")
+    password = st.text_input("パスワード", type="password", key="login_password")
 
     if st.button("ログイン"):
         if username == "user1" and password == "pass1":  # 認証情報
