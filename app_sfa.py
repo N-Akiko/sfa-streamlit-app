@@ -2668,8 +2668,8 @@ def export_estimate():
                             
                     except Exception as e:
                                     st.error(f"ダウンロード準備でエラーが発生しました: {e}")
-                        else:
-                            st.error("見積書の生成に失敗しました")
+                            else:
+                                st.error("見積書の生成に失敗しました")
                             
                         except Exception as e:
                             st.error(f"❌ エラーが発生しました: {e}")
