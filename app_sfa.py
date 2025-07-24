@@ -2671,15 +2671,15 @@ def export_estimate():
         else:
             st.error("見積書の生成に失敗しました")
                             
-                        except Exception as e:
-                            st.error(f"❌ エラーが発生しました: {e}")
-                            st.write("**デバッグ情報:**")
-                            st.write(f"- 見積No: {st.session_state.get('見積No', '未設定')}")
-                            st.write(f"- 明細件数: {len(st.session_state.get('明細リスト', []))}")
-                            st.write(f"- 通常テンプレート: {'存在' if os.path.exists('estimate_template.xlsx') else '存在しない'}")
-                            st.write(f"- 係数テンプレート: {'存在' if os.path.exists('estimate_templat_keisuu.xlsx') else '存在しない'}")
-                            st.write("**エラーの詳細:**")
-                            st.code(traceback.format_exc())
+                    except Exception as e:
+                        st.error(f"❌ エラーが発生しました: {e}")
+                        st.write("**デバッグ情報:**")
+                        st.write(f"- 見積No: {st.session_state.get('見積No', '未設定')}")
+                        st.write(f"- 明細件数: {len(st.session_state.get('明細リスト', []))}")
+                        st.write(f"- 通常テンプレート: {'存在' if os.path.exists('estimate_template.xlsx') else '存在しない'}")
+                        st.write(f"- 係数テンプレート: {'存在' if os.path.exists('estimate_templat_keisuu.xlsx') else '存在しない'}")
+                        st.write("**エラーの詳細:**")
+                        st.code(traceback.format_exc())
 
 def render_editable_detail_list_with_coefficient(品名一覧_df):
     """編集可能な明細一覧を表示（係数対応版）"""
