@@ -2641,24 +2641,35 @@ def export_estimate():
             return
         
         if success and os.path.exists(ファイル名):
-            st.success(f"✅ 見積書を出力しました!")
-            if 係数機能使用:
-                st.info(f"📋 **係数対応テンプレートを使用しました**")
-            else:
-                st.info(f"📋 **通常テンプレートを使用しました**")
-            st.info(f"📁 **保存先:** `{os.path.abspath(ファイル名)}`")
-            
-            # ダウンロードボタンを追加
-            with open(ファイル名, "rb") as file:
-                st.download_button(
-                    label="📥 見積書をダウンロード",
-                    data=file.read(),
-                    file_name=ファイル名,
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    key="download_estimate"
-                )
-        else:
-            st.error("見積書の生成に失敗しました")
+                    st.success(f"✅ 見積書を出力しました!")
+                    if 係数機能使用:
+                        st.info(f"📋 **係数対応テンプレートを使用しました**")
+                    else:
+                        st.info(f"📋 **通常テンプレートを使用しました**")
+                    st.info(f"📁 **保存先:** `{os.path.abspath(ファイル名)}`")
+                    
+                    # ファイルデータを読み込み
+                    try:
+                        with open(ファイル名, "rb") as file:
+                            file_data = file.read()
+                        
+                        # 自動ダウンロード用のHTML
+                        st.markdown("📥 **見積書のダウンロードを開始します**")
+                        
+                        # ダウンロードボタン（自動ダウンロード機能付き）
+                        if st.download_button(
+                            label="📥 見積書をダウンロード",
+                            data=file_data,
+                            file_name=ファイル名,
+                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                            key="download_estimate"
+                        ):
+                            st.success("ダウンロードが完了しました！")
+                            
+                    except Exception as e:
+                        st.error(f"ダウンロード準備でエラーが発生しました: {e}")
+                else:
+                    st.error("見積書の生成に失敗しました")
         
     except Exception as e:
         st.error(f"❌ エラーが発生しました: {e}")
