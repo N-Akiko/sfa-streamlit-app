@@ -4933,19 +4933,33 @@ if __name__ == "__main__":
 def main_app():
     st.success(f"ようこそ、{st.session_state['username']} さん！")
 
-    if st.button("ログアウト"):
-        st.session_state["logged_in"] = False
-        st.session_state["username"] = ""
-        st.experimental_rerun()
-    
-    # ここに既存のメイン処理（init_session_state()〜以降）を続けて記述
+    # 必要に応じて初期化とデータ読み込み
     init_session_state()
     顧客一覧, 案件一覧, 品名一覧 = load_data()
 
-    # 以降の既存のコードをこの関数内に入れていく
-
 # --- 実行フロー ---
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
 if st.session_state["logged_in"]:
+    # サイドバーにログアウトボタン
+    if st.sidebar.button("ログアウト"):
+        st.session_state["logged_in"] = False
+        st.session_state["username"] = ""
+        st.rerun()
+
+    # ログイン成功時のアプリ本体
     main_app()
+
 else:
-    login()
+    st.header("ログイン")
+    username = st.text_input("ユーザー名")
+    password = st.text_input("パスワード", type="password")
+
+    if st.button("ログイン"):
+        if username == "user1" and password == "pass1":  # 仮の認証（将来的にDBなどに切替可能）
+            st.session_state["logged_in"] = True
+            st.session_state["username"] = username
+            st.rerun()
+        else:
+            st.error("ユーザー名またはパスワードが正しくありません。")
