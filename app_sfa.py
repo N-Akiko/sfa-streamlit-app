@@ -4853,9 +4853,100 @@ def apply_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-# メイン関数のタブ選択肢を更新
+# ログイン認証関数
+def authenticate_user(username, password):
+    """ユーザー認証を行う"""
+    # 認証情報（実際の運用では環境変数やデータベースを使用）
+    USERS = {
+        "admin": "password123",
+        "user1": "pass1234",
+        "manager": "mgr2024",
+        "staff": "staff123"
+    }
+    
+    return USERS.get(username) == password
+
+def render_login_form():
+    """ログインフォームを表示"""
+    st.title("🔐 見積書作成アプリ - ログイン")
+    
+    # ログインフォームを中央に配置
+    col1, col2, col3 = st.columns([1, 2, 1])
+    
+    with col2:
+        st.markdown("### ログインしてください")
+        
+        with st.form("login_form"):
+            username = st.text_input("ユーザー名", placeholder="ユーザー名を入力")
+            password = st.text_input("パスワード", type="password", placeholder="パスワードを入力")
+            
+            login_button = st.form_submit_button("ログイン", type="primary", use_container_width=True)
+            
+            if login_button:
+                if not username or not password:
+                    st.error("ユーザー名とパスワードを入力してください")
+                elif authenticate_user(username, password):
+                    st.session_state["authenticated"] = True
+                    st.session_state["username"] = username
+                    st.session_state["login_time"] = datetime.datetime.now()
+                    st.success("ログインしました！")
+                    st.rerun()
+                else:
+                    st.error("ユーザー名またはパスワードが正しくありません")
+        
+        # デモ用認証情報の表示
+        st.markdown("---")
+        st.info("**デモ用ログイン情報:**\n\n"
+               "• ユーザー名: `admin` / パスワード: `password123`\n\n"
+               "• ユーザー名: `user1` / パスワード: `pass1234`\n\n"
+               "• ユーザー名: `manager` / パスワード: `mgr2024`\n\n"
+               "• ユーザー名: `staff` / パスワード: `staff123`")
+
+def render_logout_button():
+    """ログアウトボタンをサイドバーに表示"""
+    with st.sidebar:
+        st.markdown("---")
+        st.write(f"**ログイン中:** {st.session_state.get('username', 'Unknown')}")
+        
+        # ログイン時間の表示
+        login_time = st.session_state.get('login_time')
+        if login_time:
+            elapsed = datetime.datetime.now() - login_time
+            hours, remainder = divmod(elapsed.total_seconds(), 3600)
+            minutes, _ = divmod(remainder, 60)
+            st.write(f"**ログイン時間:** {int(hours)}時間{int(minutes)}分")
+        
+        if st.button("🚪 ログアウト", type="secondary", use_container_width=True):
+            # セッション状態をクリア
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.success("ログアウトしました")
+            st.rerun()
+
+def check_session_timeout():
+    """セッションタイムアウトをチェック（オプション）"""
+    if "login_time" in st.session_state:
+        login_time = st.session_state["login_time"]
+        elapsed = datetime.datetime.now() - login_time
+        
+        # 8時間でタイムアウト
+        if elapsed.total_seconds() > 8 * 3600:
+            for key in list(st.session_state.keys()):
+                del st.session_state[key]
+            st.warning("セッションがタイムアウトしました。再度ログインしてください。")
+            st.rerun()
+
 def main():
-    """メイン処理（セッション安定化版）"""
+    """メイン処理（ログイン機能付き）"""
+    # セッションタイムアウトチェック
+    check_session_timeout()
+    
+    # 認証チェック
+    if not st.session_state.get("authenticated", False):
+        render_login_form()
+        return
+    
+    # ログイン後のメイン処理
     # カスタムCSSの適用
     apply_custom_css()
     
@@ -4900,8 +4991,9 @@ def main():
     elif タブ == "⑥ 商品一覧":
         render_product_list_tab()
 
-    # サイドバーに現在の状態を表示
+    # サイドバーに現在の状態を表示（ログアウトボタン付き）
     render_sidebar_status()
+    render_logout_button()
 
 # アプリケーションの実行
 if __name__ == "__main__":
