@@ -8,50 +8,9 @@ import openpyxl
 import traceback
 from estimate_excel_writer import write_estimate_to_excel
 
-# --- ログインチェックとページ設定 ---
-def login():
-    st.set_page_config(page_title="見積書作成アプリ", layout="wide")
-    st.title("見積書作成アプリ")
-
-    if "logged_in" not in st.session_state:
-        st.session_state["logged_in"] = False
-
-    if st.session_state["logged_in"]:
-        main_app()
-    else:
-        st.header("ログイン")
-        username = st.text_input("ユーザー名")
-        password = st.text_input("パスワード", type="password")
-        if st.button("ログイン"):
-            if username == "user1" and password == "pass1":  # ← 認証ロジック
-                st.session_state["logged_in"] = True
-                st.session_state["username"] = username
-                st.rerun()
-            else:
-                st.error("ユーザー名またはパスワードが正しくありません。")
-
-# --- メインアプリ処理 ---
-def main_app():
-    st.success(f"ようこそ、{st.session_state['username']} さん！")
-
-    if st.sidebar.button("ログアウト"):
-        st.session_state["logged_in"] = False
-        st.session_state["username"] = ""
-        st.rerun()
-
-    # ↓ここから既存の初期化やタブ処理などを書く
-    init_session_state()
-    顧客一覧, 案件一覧, 品名一覧 = load_data()
-    # （タブ描画などの処理）
-
-# --- 起動 ---
-if __name__ == "__main__":
-    login()
-
-
-# --- セッションの初期化 ---
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
+# ページ設定
+st.set_page_config(page_title="見積書作成アプリ", layout="wide")
+st.title("見積書作成アプリ")
 
 # 定数定義
 ISSUER_LIST = ["須藤 竜平", "本間 清昭", "片岡 啓明", "青山 泰", "中角 明子"]
@@ -4947,31 +4906,3 @@ def main():
 # アプリケーションの実行
 if __name__ == "__main__":
     main()
-
-# --- メインアプリ処理 ---
-def main_app():
-    st.success(f"ようこそ、{st.session_state['username']} さん！")
-
-    # 必要に応じて初期化とデータ読み込み
-    init_session_state()
-    顧客一覧, 案件一覧, 品名一覧 = load_data()
-
-# --- 実行フロー ---
-if "logged_in" not in st.session_state:
-    st.session_state["logged_in"] = False
-    st.session_state["username"] = ""
-
-if st.session_state["logged_in"]:
-    main_app()  # ← ログイン済みユーザーのみアクセス可
-else:
-    st.header("ログイン")
-    username = st.text_input("ユーザー名", key="login_username")
-    password = st.text_input("パスワード", type="password", key="login_password")
-
-    if st.button("ログイン"):
-        if username == "user1" and password == "pass1":  # 認証情報
-            st.session_state["logged_in"] = True
-            st.session_state["username"] = username
-            st.rerun()
-        else:
-            st.error("ユーザー名またはパスワードが正しくありません。")
