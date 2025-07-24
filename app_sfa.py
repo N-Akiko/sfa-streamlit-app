@@ -4934,9 +4934,9 @@ def main_app():
     st.success(f"ようこそ、{st.session_state['username']} さん！")
 
     if st.button("ログアウト"):
-    st.session_state["logged_in"] = False
-    st.session_state["username"] = ""
-    st.experimental_rerun()
+        st.session_state["logged_in"] = False
+        st.session_state["username"] = ""
+        st.experimental_rerun()
     
     # ここに既存のメイン処理（init_session_state()〜以降）を続けて記述
     init_session_state()
