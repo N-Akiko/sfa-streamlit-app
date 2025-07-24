@@ -12,6 +12,28 @@ from estimate_excel_writer import write_estimate_to_excel
 st.set_page_config(page_title="見積書作成アプリ", layout="wide")
 st.title("見積書作成アプリ")
 
+# --- ログイン機能 ---
+USER_CREDENTIALS = {
+    "admin": "admin123",
+    "guest": "guest456",
+}
+
+def login():
+    st.subheader("ログイン")
+    username = st.text_input("ユーザー名")
+    password = st.text_input("パスワード", type="password")
+    if st.button("ログイン"):
+        if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+            st.session_state["logged_in"] = True
+            st.session_state["username"] = username
+            st.experimental_rerun()
+        else:
+            st.error("ユーザー名またはパスワードが違います")
+
+# --- セッションの初期化 ---
+if "logged_in" not in st.session_state:
+    st.session_state["logged_in"] = False
+
 # 定数定義
 ISSUER_LIST = ["須藤 竜平", "本間 清昭", "片岡 啓明", "青山 泰", "中角 明子"]
 EXCEL_FILENAME = "見積管理データ.xlsx"
@@ -4906,3 +4928,24 @@ def main():
 # アプリケーションの実行
 if __name__ == "__main__":
     main()
+
+# --- メインアプリ処理 ---
+def main_app():
+    st.success(f"ようこそ、{st.session_state['username']} さん！")
+
+    if st.button("ログアウト"):
+    st.session_state["logged_in"] = False
+    st.session_state["username"] = ""
+    st.experimental_rerun()
+    
+    # ここに既存のメイン処理（init_session_state()〜以降）を続けて記述
+    init_session_state()
+    顧客一覧, 案件一覧, 品名一覧 = load_data()
+
+    # 以降の既存のコードをこの関数内に入れていく
+
+# --- 実行フロー ---
+if st.session_state["logged_in"]:
+    main_app()
+else:
+    login()
