@@ -2641,7 +2641,6 @@ def export_estimate():
             return
         
         if success and os.path.exists(ファイル名):
-        if success and os.path.exists(ファイル名):
                     st.success(f"✅ 見積書を出力しました!")
                     if 係数機能使用:
                         st.info(f"📋 **係数対応テンプレートを使用しました**")
