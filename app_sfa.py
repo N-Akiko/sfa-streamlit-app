@@ -2641,45 +2641,45 @@ def export_estimate():
             return
         
         if success and os.path.exists(ファイル名):
-                    st.success(f"✅ 見積書を出力しました!")
-                    if 係数機能使用:
-                        st.info(f"📋 **係数対応テンプレートを使用しました**")
-                    else:
-                        st.info(f"📋 **通常テンプレートを使用しました**")
-                    st.info(f"📁 **保存先:** `{os.path.abspath(ファイル名)}`")
+            st.success(f"✅ 見積書を出力しました!")
+            if 係数機能使用:
+                st.info(f"📋 **係数対応テンプレートを使用しました**")
+            else:
+                st.info(f"📋 **通常テンプレートを使用しました**")
+            st.info(f"📁 **保存先:** `{os.path.abspath(ファイル名)}`")
+            
+            # ファイルデータを読み込み
+            try:
+                with open(ファイル名, "rb") as file:
+                    file_data = file.read()
+                
+                # 自動ダウンロード用のHTML
+                st.markdown("📥 **見積書のダウンロードを開始します**")
+                
+                # ダウンロードボタン（自動ダウンロード機能付き）
+                if st.download_button(
+                    label="📥 見積書をダウンロード",
+                    data=file_data,
+                    file_name=ファイル名,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    key="download_estimate"
+                ):
+                    st.success("ダウンロードが完了しました！")
                     
-                    # ファイルデータを読み込み
-                    try:
-                        with open(ファイル名, "rb") as file:
-                            file_data = file.read()
-                        
-                        # 自動ダウンロード用のHTML
-                        st.markdown("📥 **見積書のダウンロードを開始します**")
-                        
-                        # ダウンロードボタン（自動ダウンロード機能付き）
-                        if st.download_button(
-                            label="📥 見積書をダウンロード",
-                            data=file_data,
-                            file_name=ファイル名,
-                            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                            key="download_estimate"
-                        ):
-                            st.success("ダウンロードが完了しました！")
-                            
-                    except Exception as e:
-                                    st.error(f"ダウンロード準備でエラーが発生しました: {e}")
-                            else:
-                                st.error("見積書の生成に失敗しました")
-                            
-                        except Exception as e:
-                            st.error(f"❌ エラーが発生しました: {e}")
-                            st.write("**デバッグ情報:**")
-                            st.write(f"- 見積No: {st.session_state.get('見積No', '未設定')}")
-                            st.write(f"- 明細件数: {len(st.session_state.get('明細リスト', []))}")
-                            st.write(f"- 通常テンプレート: {'存在' if os.path.exists('estimate_template.xlsx') else '存在しない'}")
-                            st.write(f"- 係数テンプレート: {'存在' if os.path.exists('estimate_templat_keisuu.xlsx') else '存在しない'}")
-                            st.write("**エラーの詳細:**")
-                            st.code(traceback.format_exc())
+            except Exception as e:
+                st.error(f"ダウンロード準備でエラーが発生しました: {e}")
+        else:
+            st.error("見積書の生成に失敗しました")
+        
+    except Exception as e:
+        st.error(f"❌ エラーが発生しました: {e}")
+        st.write("**デバッグ情報:**")
+        st.write(f"- 見積No: {st.session_state.get('見積No', '未設定')}")
+        st.write(f"- 明細件数: {len(st.session_state.get('明細リスト', []))}")
+        st.write(f"- 通常テンプレート: {'存在' if os.path.exists('estimate_template.xlsx') else '存在しない'}")
+        st.write(f"- 係数テンプレート: {'存在' if os.path.exists('estimate_templat_keisuu.xlsx') else '存在しない'}")
+        st.write("**エラーの詳細:**")
+        st.code(traceback.format_exc())
 
 def render_editable_detail_list_with_coefficient(品名一覧_df):
     """編集可能な明細一覧を表示（係数対応版）"""
